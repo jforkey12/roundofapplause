@@ -10,10 +10,12 @@ You'll need ports 558 and 27017 available on localhost.
 create a directory and start the mongoDB service by executing the following on a command prompt:
 
 >md /data/db
+
 >"C:\Program Files\MongoDB\Server\4.0\bin\mongo.exe"
 
 Create the database user for the connection via mongoDB shell:
-db.createUser({user:"admin1",pwd: "qwerty123456!",roles: [{ role: "readWrite", db:"applause"}]})
+
+>db.createUser({user:"admin1",pwd: "qwerty123456!",roles: [{ role: "readWrite", db:"applause"}]})
 
 start one of the services:
 app_small.exe or app_scale.exe
