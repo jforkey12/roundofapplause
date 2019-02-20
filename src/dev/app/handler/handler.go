@@ -19,7 +19,7 @@ import (
 )
 
 func (rest restService) Init() error {
-	persistData := true
+	persistData := false
 	if persistData {
 		var devList []string
 		devcsv := "data/devices.csv"
