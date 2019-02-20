@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -149,9 +150,12 @@ func (rest restService) Init() error {
 		}
 
 		for i := 1; i <= 1000000; i++ {
+			rand.Seed(time.Now().UnixNano())
+			n := rand.Intn(len(devList)-1) + 1
+
 			data := m.Bug{
 				ID:        i,
-				Device:    devList[rand.Intn(len(devList))],
+				Device:    devList[n],
 				CreatedBy: rand.Intn(100000),
 			}
 			fmt.Println(data)
@@ -161,13 +165,20 @@ func (rest restService) Init() error {
 		countryList := [...]string{"US", "GB", "JP"}
 
 		for i := 1; i <= 100000; i++ {
+			var tDevs []string
+			rand.Seed(time.Now().UnixNano())
+			n := rand.Intn(len(devList)-1) + 1
+			n2 := rand.Intn(len(devList)-1) + 1
+
+			tDevs = append(tDevs, devList[n])
+			tDevs = append(tDevs, devList[n2])
 			data := m.User{
 				ID:        i,
 				FirstName: RandStringBytes(8),
 				LastName:  RandStringBytes(8),
 				Country:   countryList[rand.Intn(len(countryList))],
 				LastLogin: RandStringBytes(8),
-				Devices:   devList,
+				Devices:   tDevs,
 			}
 
 			fmt.Println(data)

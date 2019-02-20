@@ -34,6 +34,14 @@ func (svc appService) GetUsers(query url.Values) (users []m.User, err error) {
 				bugCount++
 			}
 		}
+		// less efficient
+		/*for i := len(bugs) - 1; i >= 0; i-- {
+			if bugs[i].CreatedBy == user.ID {
+				bugCount++
+				bugs = append(bugs[:i], bugs[i+1:]...)
+			}
+		}*/
+
 		users[i].BugCount = bugCount
 	}
 

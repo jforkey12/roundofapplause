@@ -8,7 +8,6 @@ type User struct {
 	LastLogin string   `json:"lastLogin"`
 	Devices   []string `json:"devices"`
 	BugCount  int      `json:"bugCount"`
-	Bugs      []string `json:"bugs"`
 }
 
 func (a *User) Merge(a2 User) {
