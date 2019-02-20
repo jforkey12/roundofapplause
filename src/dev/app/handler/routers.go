@@ -15,14 +15,12 @@ var instance models.RestInterface
 
 type restService struct {
 	service models.ServiceInterface
-	restAdm rest.RestInterface
 }
 
 func getRestService() models.RestInterface {
 	once.Do(func() {
 		serv := appService.GetService()
-		rest := rest.GetRestInterface()
-		instance = restService{restAdm: rest, service: serv}
+		instance = restService{service: serv}
 	})
 	return instance
 }
