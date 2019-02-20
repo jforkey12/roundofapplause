@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -17,7 +18,7 @@ import (
 )
 
 func (rest restService) Init() error {
-	persistData := true
+	persistData := false
 	if persistData {
 		var devList []string
 		devcsv := "data/devices.csv"
@@ -88,6 +89,41 @@ func (rest restService) Init() error {
 				Devices:   devices,
 			}
 			fmt.Println(tLine)
+			fmt.Println(data)
+			rest.service.CreateUser(data)
+		}
+		//create a bunch of bugs to test scalability
+	} else {
+		var devList []string
+		devcsv := "data/devices.csv"
+
+		f1, err := os.Open(devcsv)
+		if err != nil {
+			panic(err)
+		}
+		defer f1.Close()
+
+		dLines, err := csv.NewReader(f1).ReadAll()
+		if err != nil {
+			panic(err)
+		}
+
+		for _, dLine := range dLines {
+			fmt.Println(dLine)
+			devList = append(devList, dLine[1])
+		}
+		countryList := [...]string{"US", "GB", "JP"}
+
+		for i := 1; i <= 100000; i++ {
+			data := m.User{
+				ID:        i,
+				FirstName: RandStringBytes(8),
+				LastName:  RandStringBytes(8),
+				Country:   countryList[rand.Intn(len(countryList))],
+				LastLogin: RandStringBytes(8),
+				Devices:   devList,
+			}
+
 			fmt.Println(data)
 			rest.service.CreateUser(data)
 		}
@@ -230,4 +266,14 @@ func readRequestBody(r *http.Request) ([]byte, error) {
 		return body, err
 	}
 	return body, err
+}
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func RandStringBytes(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
 }

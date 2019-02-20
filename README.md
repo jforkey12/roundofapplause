@@ -1,10 +1,9 @@
 # roundofapplause
 
-========
-WINDOWS
-========
 Download and install MongoDB:
 https://www.mongodb.com
+
+You'll need ports 555, 556, and 27017 available on localhost.
 
 create a directory and start the mongoDB service by executing the following on a command prompt:
 
@@ -14,23 +13,14 @@ create a directory and start the mongoDB service by executing the following on a
 Create the database user for the connection via mongoDB shell:
 db.createUser({user:"admin1",pwd: "qwerty123456!",roles: [{ role: "readWrite", db:"applause"}]})
 
-Start the mongodb service on 27017 and create a user admin1 / qwerty123456!
-You'll need ports 555, 556, and 27017 available on localhost.
-
-
-To get 
-The dataset was unnecessarily relational.  When you boil it down, the only things that matter here are users and bugs.
-Bugs are found on a particular device.
-Users have a set of devices.
 
 3rd party dependencies:
 github.com/globalsign/mgo
 -The MongoDB (community supported branch) driver for Go.
-github.com/go-resty/resty
--To quickly spin up rest endpoints and wrap responses
 github.com/gorilla/mux
--For quickly spinning up routes for said endpoints
+-For quickly spinning up routes for rest endpoints
 
+Testing:
 
 
 You used a non-relation database to solve a coding changing that was obviously relational?

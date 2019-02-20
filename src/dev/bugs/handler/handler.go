@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -17,7 +18,7 @@ import (
 )
 
 func (rest restService) Init() error {
-	persistData := true
+	persistData := false
 	if persistData {
 		var devList []string
 		devcsv := "data/devices.csv"
@@ -67,6 +68,36 @@ func (rest restService) Init() error {
 				ID:        id,
 				Device:    device,
 				CreatedBy: createdBy,
+			}
+			fmt.Println(data)
+			rest.service.CreateBug(data)
+		}
+		//create a bunch of bugs to test scalability
+	} else {
+		var devList []string
+		devcsv := "data/devices.csv"
+
+		f1, err := os.Open(devcsv)
+		if err != nil {
+			panic(err)
+		}
+		defer f1.Close()
+
+		dLines, err := csv.NewReader(f1).ReadAll()
+		if err != nil {
+			panic(err)
+		}
+
+		for _, dLine := range dLines {
+			fmt.Println(dLine)
+			devList = append(devList, dLine[1])
+		}
+
+		for i := 1; i <= 1000000; i++ {
+			data := m.Bug{
+				ID:        i,
+				Device:    devList[rand.Intn(len(devList))],
+				CreatedBy: rand.Intn(100000),
 			}
 			fmt.Println(data)
 			rest.service.CreateBug(data)

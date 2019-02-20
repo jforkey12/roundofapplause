@@ -22,7 +22,7 @@ func (svc bugsService) GetBugs(query url.Values) (bugs []m.Bug, err error) {
 
 func ParseQueryParams(stringFilter map[string]string) (testerIds []int, devices []string) {
 	for key, _ := range stringFilter {
-		if key == "testerId" {
+		if key == "createdBy" {
 			testerIdsStr := strings.Split(stringFilter[key], ",")
 			for _, idstr := range testerIdsStr {
 				id, _ := strconv.Atoi(idstr)

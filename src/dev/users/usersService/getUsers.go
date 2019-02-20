@@ -5,6 +5,7 @@ import (
 	m "dev/users/models"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/url"
 	"strconv"
 	"strings"
@@ -20,24 +21,31 @@ func (svc usersService) GetUsers(query url.Values) (users []m.User, err error) {
 	countries, devices := ParseQueryParams(filter)
 	users, err = svc.db.GetUsers(countries, devices)
 	for i, user := range users {
-		query := "device" + strings.Join(devices, ",") + "&id=" + strconv.Itoa(user.ID)
-		response, err := svc.restAdm.CallRESTAPI("http://localhost:555/applause/v1/bugs?"+query, "GET", nil, nil)
+		query := "createdBy=" + strconv.Itoa(user.ID)
+
+		if len(devices) > 0 {
+			query = query + "&device=" + strings.Join(devices, ",")
+		}
+		equery := &url.URL{Path: query}
+		path := "http://localhost:555/applause/v1/bugs?" + equery.String()
+
+		response, err := svc.restAdm.CallRESTAPI(path, "GET", nil)
 		if err != nil {
 			fmt.Println(response)
 			fmt.Println(err)
 			return users, err
 		}
 
-		err = svc.restAdm.HandleRESTAPIResponse(*response, err, "")
+		defer response.Body.Close()
+		data, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			fmt.Println(err)
-			return users, err
 		}
+		bugs := []b.Bug{}
 
-		var bugs []b.Bug
-		err = json.Unmarshal([]byte(response.Body()), &bugs)
+		err = json.Unmarshal(data, &bugs)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("unmarshal error:" + err.Error())
 			return users, err
 		}
 		users[i].BugCount = len(bugs)

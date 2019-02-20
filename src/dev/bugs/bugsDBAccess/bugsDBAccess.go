@@ -80,7 +80,7 @@ func (mgo DbService) GetBugs(testerIds []int, devices []string) ([]m.Bug, error)
 		dParams = bson.M{"device": bson.M{"$in": devices}}
 	}
 	if len(testerIds) > 0 {
-		tParams = bson.M{"testerId": bson.M{"$in": testerIds}}
+		tParams = bson.M{"createdby": bson.M{"$in": testerIds}}
 	}
 	if len(devices) > 0 && len(testerIds) > 0 {
 		conditions =
