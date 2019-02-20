@@ -4,6 +4,7 @@ import (
 	m "dev/app/models"
 	"fmt"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -27,11 +28,18 @@ func (svc appService) GetUsers(query url.Values) (users []m.User, err error) {
 
 	bugs, _ := svc.db.GetBugs(ids, devices)
 
-	for i, user := range users {
+	sort.Slice(bugs, func(i, j int) bool {
+		return bugs[i].CreatedBy > bugs[j].CreatedBy
+	})
+	j := 0
+	for i := range users {
 		bugCount := 0
-		for _, bug := range bugs {
-			if bug.CreatedBy == user.ID {
+		for ; j <= len(bugs); j++ {
+			if bugs[j].CreatedBy == users[i].ID {
 				bugCount++
+			}
+			if users[i].ID > bugs[j].CreatedBy {
+				break
 			}
 		}
 		users[i].BugCount = bugCount
