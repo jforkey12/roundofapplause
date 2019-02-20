@@ -16,7 +16,7 @@ var instance m.DbInterface
 
 type DbService struct {
 	Session    *mgo.Session
-	Collection *mgo.Collection
+	userCollection *mgo.userCollection
 }
 
 func GetMgoService() m.DbInterface {
@@ -35,28 +35,28 @@ func GetMgoService() m.DbInterface {
 func (mgo *DbService) InitSession() (err error) {
 	uniqueIndexes := []string{"id"}
 	indexes := []string{"firstName", "lastName", "country"}
-	mgo.Session, mgo.Collection, err = db.Init("users", uniqueIndexes, indexes)
+	mgo.Session, mgo.userCollection, err = db.Init("users", uniqueIndexes, indexes)
 	return err
 
 }
 
 func (mgo *DbService) InsertUser(user m.User) (m.User, error) {
 
-	if mgo.Collection == nil {
+	if mgo.userCollection == nil {
 		return m.User{}, errors.New("DB not initialized")
 	}
 
-	err := mgo.Collection.Insert(user)
+	err := mgo.userCollection.Insert(user)
 	return user, err
 }
 
 func (mgo *DbService) ReplaceUser(user m.User) (m.User, error) {
 
-	if mgo.Collection == nil {
+	if mgo.userCollection == nil {
 		return m.User{}, errors.New("DB not initialized")
 	}
 
-	err := mgo.Collection.Update(bson.M{"id": user.ID}, user)
+	err := mgo.userCollection.Update(bson.M{"id": user.ID}, user)
 	return user, err
 }
 
@@ -66,7 +66,7 @@ func (mgo DbService) GetUsers(countries []string, devices []string) ([]m.User, e
 	var cParams bson.M
 	conditions := bson.M{}
 
-	if mgo.Collection == nil {
+	if mgo.userCollection == nil {
 		return users, errors.New("DB not initialized")
 	}
 	if len(devices) > 0 {
@@ -87,10 +87,10 @@ func (mgo DbService) GetUsers(countries []string, devices []string) ([]m.User, e
 	} else if len(countries) > 0 {
 		conditions = cParams
 	} else {
-		err := mgo.Collection.Find(nil).All(&users)
+		err := mgo.userCollection.Find(nil).All(&users)
 		return users, err
 	}
-	err := mgo.Collection.Find(conditions).All(&users)
+	err := mgo.userCollection.Find(conditions).All(&users)
 
 	return users, err
 }
@@ -98,19 +98,19 @@ func (mgo DbService) GetUsers(countries []string, devices []string) ([]m.User, e
 func (mgo DbService) GetUserByID(id string) (m.User, error) {
 	user := m.User{}
 
-	if mgo.Collection == nil {
+	if mgo.userCollection == nil {
 		return user, errors.New("DB not initialized")
 	}
 
-	err := mgo.Collection.Find(bson.M{"id": id}).One(&user)
+	err := mgo.userCollection.Find(bson.M{"id": id}).One(&user)
 	return user, err
 }
 
 func (mgo DbService) DeleteUser(id string) error {
-	if mgo.Collection == nil {
+	if mgo.userCollection == nil {
 		return errors.New("DB not initialized")
 	}
-	err := mgo.Collection.Remove(bson.M{"id": id})
+	err := mgo.userCollection.Remove(bson.M{"id": id})
 
 	return err
 }
