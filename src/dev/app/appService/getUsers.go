@@ -28,21 +28,23 @@ func (svc appService) GetUsers(query url.Values) (users []m.User, err error) {
 
 	bugs, _ := svc.db.GetBugs(ids, devices)
 
-	sort.Slice(bugs, func(i, j int) bool {
-		return bugs[i].CreatedBy > bugs[j].CreatedBy
+	sort.Slice(bugs, func(a, b int) bool {
+		return bugs[a].CreatedBy < bugs[b].CreatedBy
 	})
+	fmt.Println(users)
+	fmt.Println(bugs)
 	j := 0
-	for i := range users {
+	for i, _ := range users {
 		bugCount := 0
-		for ; j <= len(bugs); j++ {
+		for ; j <= len(bugs)-1; j++ {
 			if bugs[j].CreatedBy == users[i].ID {
 				bugCount++
+				users[i].BugCount = bugCount
 			}
-			if users[i].ID > bugs[j].CreatedBy {
+			if bugs[j].CreatedBy > users[i].ID {
 				break
 			}
 		}
-		users[i].BugCount = bugCount
 	}
 
 	return users, err
